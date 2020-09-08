@@ -1,24 +1,39 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, createRef, useEffect } from "react";
+import Canvas from "./components/Canvas";
 
 function App() {
+  const [filters, setFilters] = useState({});
+  const [imageUrl, setImageUrl] = useState(undefined);
+
+  const [brightness, setBrightness] = useState(`brightness(${100}%)`);
+
+  function handleUpload(e) {
+    if (!e.target.files || e.target.files.length === 0) {
+      return;
+    }
+
+    const file = e.target.files[0];
+
+    if (file.type === "image/png" || file.type === "image/jpeg") {
+      const imageUrl = URL.createObjectURL(file);
+      setImageUrl(imageUrl);
+    } else return alert("Invalid File Type");
+  }
+
+  console.log(brightness);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <input type="file" accept="image/*" onChange={handleUpload} />
+      <input
+        type="range"
+        min="0"
+        max="200"
+        value={brightness}
+        onChange={(e) => setBrightness(`brightness(${e.target.value}%)`)}
+        step="1"
+      />
+      <Canvas imageUrl={imageUrl} filters={brightness} />
     </div>
   );
 }
