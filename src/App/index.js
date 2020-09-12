@@ -2,89 +2,30 @@ import React, { useState, createRef, useEffect } from "react";
 import Main from "./Main";
 import styled from "styled-components";
 
+import {
+  initialOverlay,
+  solidOverlay,
+  linearOverlay,
+  radialOverlay,
+} from "../constants/overlays";
+
 import Presets from "./Presets";
+import Sidebar from "./Sidebar";
+import Overlay from "../components/Overlay";
+import { initialFilterState } from "../constants/initialFilterState";
+import { presets } from "../constants/presets";
 
 const Container = styled.div`
-  min-height: 100vh;
+  height: 100vh;
+  width: 100vw;
+  position: absolute;
   display: flex;
-`;
-
-const Sidebar = styled.div`
-  width: 15%;
-  background-color: #ccc;
-`;
-
-const Adjustments = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 25%;
-  background-color: green;
 `;
 
 function App() {
-  const [filters, setFilters] = useState([
-    {
-      name: "brightness",
-      value: 100,
-      maxValue: 200,
-      unit: "%",
-    },
-    {
-      name: "contrast",
-      value: 100,
-      maxValue: 200,
-      unit: "%",
-    },
-    {
-      name: "saturate",
-      value: 100,
-      maxValue: 200,
-      unit: "%",
-    },
-    {
-      name: "sepia",
-      value: 0,
-      maxValue: 100,
-      unit: "%",
-    },
-    {
-      name: "grayscale",
-      value: 0,
-      maxValue: 100,
-      unit: "%",
-    },
-    {
-      name: "invert",
-      value: 0,
-      maxValue: 100,
-      unit: "%",
-    },
-    {
-      name: "hue-rotate",
-      value: 0,
-      maxValue: 360,
-      unit: "deg",
-    },
-    {
-      name: "blur",
-      value: 0,
-      maxValue: 10,
-      unit: "px",
-    },
-  ]);
+  const [filters, setFilters] = useState(initialFilterState);
 
-  const [overlay, setOverlay] = useState({
-    name: "none",
-    color1: "",
-    color2: "",
-    color1Stop: 10,
-    color2Stop: 100,
-    direction: "",
-    position: "",
-    size: "",
-    blendMode: "normal",
-    opacity: 100,
-  });
+  const [overlay, setOverlay] = useState(initialOverlay);
 
   const [imageUrl, setImageUrl] = useState(undefined);
 
@@ -101,9 +42,7 @@ function App() {
     } else return alert("Invalid File Type");
   }
 
-  function handleChange(event) {
-    const { name, value } = event.target;
-
+  function handleFiltersChange(name, value) {
     setFilters(
       filters.map((filter) =>
         filter.name === name ? { ...filter, value: Number(value) } : filter
@@ -111,30 +50,38 @@ function App() {
     );
   }
 
+  function applyPresetToFilters(preset) {
+    setFilters(
+      filters.map((filter) => {
+        if (preset.filters.hasOwnProperty(filter.name)) {
+          return { ...filter, value: preset.filters[filter.name] };
+        } else return filter;
+      })
+    );
+  }
+
   function handleOverlayChange(event) {
-    setOverlay({ color1: event.target.value });
+    setOverlay({ ...overlay, color1: event.target.value });
+  }
+
+  function handleBlendingModeChange(event) {
+    setOverlay({ ...overlay, blendMode: event.target.value });
+  }
+
+  function resetFilters() {
+    setFilters(initialFilterState);
   }
 
   return (
     <Container>
-      <Presets />
+      <Presets applyPresetToFilters={applyPresetToFilters} />
       <Main imageUrl={imageUrl} filters={filters} overlay={overlay} />
-      <Adjustments>
-        <input type="file" accept="image/*" onChange={handleUpload} />
-        {filters.map((filter) => (
-          <input
-            key={filter.name}
-            type="range"
-            name={filter.name}
-            value={filter.value}
-            min="0"
-            max={filter.maxValue}
-            step="1"
-            onChange={handleChange}
-          />
-        ))}
-        <input type="color" onChange={handleOverlayChange} />
-      </Adjustments>
+      <Sidebar
+        filters={filters}
+        resetFilters={resetFilters}
+        handleUpload={handleUpload}
+        handleFiltersChange={handleFiltersChange}
+      />
     </Container>
   );
 }
