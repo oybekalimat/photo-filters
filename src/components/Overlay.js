@@ -6,7 +6,6 @@ import "rc-color-picker/assets/index.css";
 
 function Overlay({ overlay, setOverlay }) {
   function handleColor(color) {
-    console.log(color);
     setOverlay({ ...overlay, color1: color.rgb });
   }
 

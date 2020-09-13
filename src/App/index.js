@@ -53,11 +53,15 @@ function App() {
   function applyPresetToFilters(preset) {
     setFilters(
       filters.map((filter) => {
-        if (preset.filters.hasOwnProperty(filter.name)) {
-          return { ...filter, value: preset.filters[filter.name] };
-        } else return filter;
+        console.log(filter);
+        console.log(preset.filters);
+        return { ...filter, value: preset.filters[filter.name] };
       })
     );
+
+    if (preset.overlay) {
+      setOverlay(preset.overlay);
+    } else setOverlay(initialOverlay);
   }
 
   function handleOverlayChange(event) {
@@ -70,11 +74,15 @@ function App() {
 
   function resetFilters() {
     setFilters(initialFilterState);
+    setOverlay(initialOverlay);
   }
 
   return (
     <Container>
-      <Presets applyPresetToFilters={applyPresetToFilters} />
+      <Presets
+        applyPresetToFilters={applyPresetToFilters}
+        imageUrl={imageUrl}
+      />
       <Main imageUrl={imageUrl} filters={filters} overlay={overlay} />
       <Sidebar
         filters={filters}

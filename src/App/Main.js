@@ -1,11 +1,6 @@
-import React, {
-  useRef,
-  useEffect,
-  createRef,
-  useLayoutEffect,
-  useState,
-} from "react";
+import React, { useEffect, createRef, useLayoutEffect, useState } from "react";
 import styled from "styled-components";
+import { convertColorToString } from "../helpers";
 
 const Wrapper = styled.div`
   width: 66%;
@@ -21,6 +16,11 @@ const ImageContainer = styled.div`
 `;
 
 function Main(props) {
+  const { imageUrl, filters, overlay, ...rest } = props;
+
+  const ref = createRef(null);
+  const parentRef = createRef(null);
+
   const [parentSize, setParentSize] = useState({
     width: undefined,
     height: undefined,
@@ -30,10 +30,6 @@ function Main(props) {
     width: undefined,
     height: undefined,
   });
-
-  const ref = createRef(null);
-  const parentRef = createRef(null);
-  const { imageUrl, filters, ...rest } = props;
 
   useEffect(() => {
     reRenderCanvas();
@@ -69,8 +65,6 @@ function Main(props) {
       .toString();
   }
 
-  console.log(parentSize);
-
   function reRenderCanvas() {
     const canvas = ref.current;
     const context = canvas.getContext("2d");
@@ -80,34 +74,63 @@ function Main(props) {
     image.src = imageUrl;
     image.onload = () => {
       context.clearRect(0, 0, canvas.width, canvas.height);
+
       if (image.width > canvas.width || image.height > canvas.height) {
         return scaleToFit(image, canvas);
       }
+
       context.drawImage(
         image,
         canvas.width / 2 - image.width / 2,
         canvas.height / 2 - image.height / 2
       );
-      // if (overlay.name === "Solid Background") {
-      //   context.globalCompositeOperation = overlay.blendMode;
-      //   context.fillStyle = convertColorToString(overlay.color1);
-      //   context.fillRect(0, 0, 600, 600);
-      // }
-      // if (overlay.name === "Linear Gradient") {
-      //   let gradient = context.createLinearGradient(0, 0, 0, 200);
-      //   gradient.addColorStop(overlay.color1Stop, overlay.color1);
-      //   gradient.addColorStop(overlay.color2Stop, overlay.color2);
-      //   context.fillStyle = gradient;
-      //   context.fillRect(0, 0, 600, 600);
-      // }
-      // if (overlay.name === "Radial Gradient") {
-      //   let gradient = context.createRadialGradient(0, 0, 0, 200);
-      //   gradient.addColorStop(overlay.color1Stop, overlay.color1);
-      //   gradient.addColorStop(overlay.color2Stop, overlay.color2);
-      //   context.fillStyle = gradient;
-      //   context.fillRect(0, 0, 600, 600);
-      // }
+
+      if (overlay.type) applyOverlay(canvas, context, image, overlay);
     };
+  }
+
+  function applyOverlay(canvas, context, image, overlay) {
+    const { type, color1, color2, color1Stop, color2Stop, blend } = overlay;
+
+    context.globalCompositeOperation = blend;
+
+    let fill = convertColorToString(color1);
+
+    if (type === "linear") {
+      const gradient = applyGradientDirection(
+        overlay.direction,
+        context,
+        canvas
+      );
+
+      gradient.addColorStop(color1Stop / 100, convertColorToString(color1));
+      gradient.addColorStop(color2Stop / 100, convertColorToString(color2));
+      fill = gradient;
+    }
+
+    context.fillStyle = fill;
+
+    context.fillRect(
+      canvas.width / 2 - image.width / 2,
+      canvas.height / 2 - image.height / 2,
+      image.width,
+      image.height
+    );
+  }
+
+  function applyGradientDirection(direction, context, canvas) {
+    if (direction === "to left") {
+      return context.createLinearGradient(canvas.width, 0, 0, 0);
+    }
+    if (direction === "to right") {
+      return context.createLinearGradient(0, 0, canvas.width, 0);
+    }
+    if (direction === "to bottom") {
+      return context.createLinearGradient(0, 0, 0, canvas.height);
+    }
+    if (direction === "to top") {
+      return context.createLinearGradient(0, canvas.height, 0, 0);
+    }
   }
 
   function scaleToFit(img, canvas) {
@@ -121,10 +144,6 @@ function Main(props) {
     const x = canvas.width / 2 - (img.width / 2) * scale;
     const y = canvas.height / 2 - (img.height / 2) * scale;
     context.drawImage(img, x, y, img.width * scale, img.height * scale);
-  }
-
-  function convertColorToString(color) {
-    return `rgba(${color.r}, ${color.g}, ${color.b}, ${color.a})`;
   }
 
   return (
