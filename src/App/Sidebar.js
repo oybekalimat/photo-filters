@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import React, { Fragment, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import Slider from "react-rangeslider";
 import "react-rangeslider/lib/index.css";
@@ -89,6 +89,7 @@ const Button = styled.button`
   box-shadow: 0px 1px 3px -1px rgb(0 0 0 / 60%);
   transition: background-color 0.2s ease;
   user-select: none;
+  text-decoration: none;
 
   &:hover {
     background-color: #605f63;
@@ -104,6 +105,19 @@ const Heading = styled.div`
 `;
 
 function Sidebar({ filters, handleUpload, handleFiltersChange, resetFilters }) {
+  const [downloadUrl, setDownloadUrl] = useState("");
+
+  let canvas = useRef();
+
+  useEffect(() => {
+    canvas.current = document.getElementById("canvas");
+  }, []);
+
+  function createDownloadLink() {
+    const dataURL = canvas.current.toDataURL("image/png");
+    setDownloadUrl(dataURL);
+  }
+
   return (
     <Wrapper>
       <Heading>Settings</Heading>
@@ -133,7 +147,14 @@ function Sidebar({ filters, handleUpload, handleFiltersChange, resetFilters }) {
           Reset Settings
         </Button>
         <CustomUpload onChange={handleUpload} />
-        <Button>Save</Button>
+        <Button
+          as="a"
+          href={downloadUrl}
+          download="filtered-image"
+          onClick={createDownloadLink}
+        >
+          Save
+        </Button>
       </ActionsWrapper>
     </Wrapper>
   );

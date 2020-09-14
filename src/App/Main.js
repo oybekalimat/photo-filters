@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { convertColorToString } from "../helpers";
 
 const Wrapper = styled.div`
-  width: 66%;
+  width: 68%;
   background-color: #2f2f2f;
   padding: 24px;
   position: relative;
@@ -17,7 +17,6 @@ const ImageContainer = styled.div`
 
 function Main(props) {
   const { imageUrl, filters, overlay, ...rest } = props;
-
   const ref = createRef(null);
   const parentRef = createRef(null);
 
@@ -72,6 +71,7 @@ function Main(props) {
 
     const image = new Image();
     image.src = imageUrl;
+    image.crossOrigin = "anonymous";
     image.onload = () => {
       context.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -90,7 +90,15 @@ function Main(props) {
   }
 
   function applyOverlay(canvas, context, image, overlay) {
-    const { type, color1, color2, color1Stop, color2Stop, blend } = overlay;
+    const {
+      type,
+      color1,
+      color2,
+      color1Stop,
+      color2Stop,
+      blend,
+      opacity,
+    } = overlay;
 
     context.globalCompositeOperation = blend;
 
@@ -119,17 +127,17 @@ function Main(props) {
   }
 
   function applyGradientDirection(direction, context, canvas) {
-    if (direction === "to left") {
-      return context.createLinearGradient(canvas.width, 0, 0, 0);
-    }
-    if (direction === "to right") {
-      return context.createLinearGradient(0, 0, canvas.width, 0);
-    }
-    if (direction === "to bottom") {
-      return context.createLinearGradient(0, 0, 0, canvas.height);
-    }
-    if (direction === "to top") {
-      return context.createLinearGradient(0, canvas.height, 0, 0);
+    switch (direction) {
+      case "to left":
+        return context.createLinearGradient(canvas.width, 0, 0, 0);
+      case "to right":
+        return context.createLinearGradient(0, 0, canvas.width, 0);
+      case "to bottom":
+        return context.createLinearGradient(0, 0, 0, canvas.height);
+      case "to top":
+        return context.createLinearGradient(0, canvas.height, 0, 0);
+      default:
+        return null;
     }
   }
 
@@ -146,10 +154,13 @@ function Main(props) {
     context.drawImage(img, x, y, img.width * scale, img.height * scale);
   }
 
+  console.log(parentSize.width);
+
   return (
     <Wrapper>
       <ImageContainer ref={parentRef}>
         <canvas
+          id="canvas"
           ref={ref}
           {...rest}
           width={parentSize.width}

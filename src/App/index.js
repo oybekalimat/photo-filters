@@ -1,19 +1,12 @@
-import React, { useState, createRef, useEffect } from "react";
+import React, { useState } from "react";
 import Main from "./Main";
 import styled from "styled-components";
 
-import {
-  initialOverlay,
-  solidOverlay,
-  linearOverlay,
-  radialOverlay,
-} from "../constants/overlays";
+import { initialOverlay } from "../constants/overlays";
 
 import Presets from "./Presets";
 import Sidebar from "./Sidebar";
-import Overlay from "../components/Overlay";
 import { initialFilterState } from "../constants/initialFilterState";
-import { presets } from "../constants/presets";
 
 const Container = styled.div`
   height: 100vh;
@@ -27,7 +20,9 @@ function App() {
 
   const [overlay, setOverlay] = useState(initialOverlay);
 
-  const [imageUrl, setImageUrl] = useState(undefined);
+  const [imageUrl, setImageUrl] = useState(
+    `https://images.unsplash.com/40/lUUnN7VGSoWZ3noefeH7_Baker%20Beach-12.jpg?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80`
+  );
 
   function handleUpload(e) {
     if (!e.target.files || e.target.files.length === 0) {
@@ -76,6 +71,8 @@ function App() {
     setFilters(initialFilterState);
     setOverlay(initialOverlay);
   }
+
+  console.log(filters);
 
   return (
     <Container>
