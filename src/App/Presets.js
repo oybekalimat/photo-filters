@@ -1,15 +1,15 @@
 import React from "react";
 import styled from "styled-components";
+import PropTypes from "prop-types";
 import { presets } from "../constants/presets";
 import PresetImage from "../components/PresetImage";
-import { convertPresetToCSS } from "../helpers";
 
 const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
   width: 12%;
-  overflow-y: overlay;
+  overflow-y: auto;
   max-height: 100vh;
   background-color: #2b2b2b;
   border-right: 1px solid #363636;
@@ -30,5 +30,10 @@ function Presets({ applyPresetToFilters, imageUrl }) {
     </Wrapper>
   );
 }
+
+Presets.propTypes = {
+  applyPresetToFilters: PropTypes.func.isRequired,
+  imageUrl: PropTypes.string,
+};
 
 export default Presets;

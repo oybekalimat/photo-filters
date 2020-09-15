@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
-import convertColorToString from "../helpers/convertColorToString";
-import { convertPresetToCSS } from "../helpers";
+import PropTypes from "prop-types";
+import { convertPresetToCSS, convertColorToString } from "../helpers";
 
 const Wrapper = styled.div`
   display: inline-block;
@@ -25,6 +25,11 @@ const Figure = styled.figure`
   position: relative;
   margin: 0;
 
+  div {
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+  }
+
   img {
     border-top-left-radius: 6px;
     border-top-right-radius: 6px;
@@ -35,7 +40,7 @@ const Figure = styled.figure`
 `;
 
 function PresetImage({ preset, imageUrl, onClick }) {
-  const { overlay } = preset;
+  const { overlay, name } = preset;
 
   return (
     <Wrapper onClick={onClick}>
@@ -61,9 +66,34 @@ function PresetImage({ preset, imageUrl, onClick }) {
         ></div>
         <img src={imageUrl} alt="preset" />
       </Figure>
-      <span>{preset.name}</span>
+      <span>{name}</span>
     </Wrapper>
   );
 }
+
+PresetImage.propTypes = {
+  preset: PropTypes.shape({
+    name: PropTypes.string.isRequired,
+    filters: PropTypes.shape({
+      contrast: PropTypes.number,
+      brightness: PropTypes.number,
+      saturate: PropTypes.number,
+      "hue-rotate": PropTypes.number,
+      invert: PropTypes.number,
+      blur: PropTypes.number,
+      grayscale: PropTypes.number,
+      sepia: PropTypes.number,
+    }).isRequired,
+    overlay: PropTypes.shape({
+      type: PropTypes.string,
+      blend: PropTypes.string,
+      color1: PropTypes.object,
+      color2: PropTypes.object,
+      color1Stop: PropTypes.number,
+      color2Stop: PropTypes.number,
+      direction: PropTypes.string,
+    }),
+  }),
+};
 
 export default PresetImage;

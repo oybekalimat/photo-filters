@@ -1,4 +1,4 @@
-export const initialOverlay = {
+export const initialOverlayState = {
   type: "",
   color1: "",
   color2: "",
@@ -6,5 +6,4 @@ export const initialOverlay = {
   color2Stop: null,
   direction: "",
   blend: "normal",
-  opacity: 100,
 };

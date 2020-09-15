@@ -1,6 +1,7 @@
 import React, { useEffect, createRef, useLayoutEffect, useState } from "react";
 import styled from "styled-components";
-import { convertColorToString } from "../helpers";
+import PropTypes from "prop-types";
+import { convertColorToString, convertFiltersToCanvas } from "../helpers";
 
 const Wrapper = styled.div`
   width: 68%;
@@ -57,17 +58,10 @@ function Main(props) {
     }
   }, [imageUrl, windowSize.width]);
 
-  function convertFiltersToCanvas() {
-    return filters
-      .map((filter) => `${filter.name}(${filter.value}${filter.unit})`)
-      .join(" ")
-      .toString();
-  }
-
   function reRenderCanvas() {
     const canvas = ref.current;
     const context = canvas.getContext("2d");
-    context.filter = convertFiltersToCanvas();
+    context.filter = convertFiltersToCanvas(filters);
 
     const image = new Image();
     image.src = imageUrl;
@@ -154,8 +148,6 @@ function Main(props) {
     context.drawImage(img, x, y, img.width * scale, img.height * scale);
   }
 
-  console.log(parentSize.width);
-
   return (
     <Wrapper>
       <ImageContainer ref={parentRef}>
@@ -170,5 +162,26 @@ function Main(props) {
     </Wrapper>
   );
 }
+
+Main.propTypes = {
+  imageUrl: PropTypes.string,
+  filters: PropTypes.arrayOf(
+    PropTypes.shape({
+      name: PropTypes.string.isRequired,
+      value: PropTypes.number.isRequired,
+      maxValue: PropTypes.number.isRequired,
+      unit: PropTypes.string.isRequired,
+    })
+  ),
+  overlay: PropTypes.shape({
+    type: PropTypes.string.isRequired,
+    blend: PropTypes.string.isRequired,
+    color1: PropTypes.string,
+    color2: PropTypes.string,
+    color1Stop: PropTypes.number,
+    color2Stop: PropTypes.number,
+    direction: PropTypes.string,
+  }),
+};
 
 export default Main;

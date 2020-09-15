@@ -1,5 +1,6 @@
 import React, { Fragment, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
+import PropTypes from "prop-types";
 import Slider from "react-rangeslider";
 import "react-rangeslider/lib/index.css";
 import CustomUpload from "../components/CustomUpload";
@@ -159,5 +160,19 @@ function Sidebar({ filters, handleUpload, handleFiltersChange, resetFilters }) {
     </Wrapper>
   );
 }
+
+Sidebar.propTypes = {
+  filters: PropTypes.arrayOf(
+    PropTypes.shape({
+      name: PropTypes.string.isRequired,
+      value: PropTypes.number.isRequired,
+      maxValue: PropTypes.number.isRequired,
+      unit: PropTypes.string.isRequired,
+    })
+  ),
+  handleUpload: PropTypes.func.isRequired,
+  handleFiltersChange: PropTypes.func.isRequired,
+  resetFilters: PropTypes.func.isRequired,
+};
 
 export default Sidebar;

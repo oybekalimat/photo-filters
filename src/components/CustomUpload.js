@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+import PropTypes from "prop-types";
 
 const Label = styled.label`
   width: 100%;
@@ -37,5 +38,9 @@ function CustomUpload({ onChange }) {
     </>
   );
 }
+
+CustomUpload.propTypes = {
+  onChange: PropTypes.func.isRequired,
+};
 
 export default CustomUpload;

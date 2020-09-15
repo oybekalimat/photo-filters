@@ -2,11 +2,11 @@ import React, { useState } from "react";
 import Main from "./Main";
 import styled from "styled-components";
 
-import { initialOverlay } from "../constants/overlays";
+import { initialOverlayState } from "../constants/initialOverlayState";
+import { initialFilterState } from "../constants/initialFilterState";
 
 import Presets from "./Presets";
 import Sidebar from "./Sidebar";
-import { initialFilterState } from "../constants/initialFilterState";
 
 const Container = styled.div`
   height: 100vh;
@@ -17,12 +17,8 @@ const Container = styled.div`
 
 function App() {
   const [filters, setFilters] = useState(initialFilterState);
-
-  const [overlay, setOverlay] = useState(initialOverlay);
-
-  const [imageUrl, setImageUrl] = useState(
-    `https://images.unsplash.com/40/lUUnN7VGSoWZ3noefeH7_Baker%20Beach-12.jpg?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80`
-  );
+  const [overlay, setOverlay] = useState(initialOverlayState);
+  const [imageUrl, setImageUrl] = useState(undefined);
 
   function handleUpload(e) {
     if (!e.target.files || e.target.files.length === 0) {
@@ -56,7 +52,7 @@ function App() {
 
     if (preset.overlay) {
       setOverlay(preset.overlay);
-    } else setOverlay(initialOverlay);
+    } else setOverlay(initialOverlayState);
   }
 
   function handleOverlayChange(event) {
@@ -69,10 +65,8 @@ function App() {
 
   function resetFilters() {
     setFilters(initialFilterState);
-    setOverlay(initialOverlay);
+    setOverlay(initialOverlayState);
   }
-
-  console.log(filters);
 
   return (
     <Container>
