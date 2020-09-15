@@ -44,8 +44,6 @@ function App() {
   function applyPresetToFilters(preset) {
     setFilters(
       filters.map((filter) => {
-        console.log(filter);
-        console.log(preset.filters);
         return { ...filter, value: preset.filters[filter.name] };
       })
     );

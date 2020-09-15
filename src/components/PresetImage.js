@@ -64,7 +64,7 @@ function PresetImage({ preset, imageUrl, onClick }) {
               : null,
           }}
         ></div>
-        <img src={imageUrl} alt="preset" />
+        {imageUrl && <img src={imageUrl} alt="preset" />}
       </Figure>
       <span>{name}</span>
     </Wrapper>
